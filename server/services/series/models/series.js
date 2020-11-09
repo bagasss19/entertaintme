@@ -12,14 +12,13 @@ var ObjectId = require('mongodb').ObjectId
 class Model {
     static async read(req, res) {
         try {
-            const series = db.collection("series")
             const cache = await redis.get('series')
-            const ser = await series.find({}).toArray()
-
-            if (String(cache) == JSON.stringify(ser)) {
+            if (cache) {
                 console.log("<<<<<<<<<<masuk ke redis")
                 return JSON.parse(cache)
             } else {
+                const series = db.collection("series")
+                const ser = await series.find({}).toArray()
                 redis.set('series',JSON.stringify(ser))
                 // console.log(cache ,"<<<<<<<<pisahhh", JSON.stringify(ser), "<<<<<<<<<<<<<<,vhghvu")
                 console.log("<<<<<<<<<<masuk ke serrrrrr")
@@ -43,6 +42,7 @@ class Model {
                 tags: req.body.tags
             })
             console.log(req.body, "<<<<<<<BODYYYY")
+            redis.del('series')
             return data
         } catch (err) {
             return err
@@ -62,8 +62,9 @@ class Model {
             }
 
             const result = await series.replaceOne(ser, data)
+            redis.del('series')
             // console.log(req.params.id, "<<<<<<<PARAAMSSS")
-            return result.ops
+            return result
         }
 
         catch (err) {
@@ -76,15 +77,9 @@ class Model {
         try {
             const series = db.collection("series")
             const ser = { _id: ObjectId(req.params.id) }
-            const data = {
-                title: req.body.title,
-                overview: req.body.overview,
-                poster_path: req.body.poster_path,
-                popularity: req.body.popularity,
-                tags: req.body.tags
-            }
 
-            const result = await series.deleteOne(ser, data)
+            redis.del('series')
+            const result = await series.deleteOne(ser)
             // console.log(req.params.id, "<<<<<<<PARAAMSSS")
         }
 

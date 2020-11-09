@@ -12,14 +12,13 @@ var ObjectId = require('mongodb').ObjectId
 class Model {
     static async read(req, res) {
         try {
-            const movies = db.collection("movies")
-            const movie = await movies.find({}).toArray()
             const cache = await redis.get('movies')
-
-            if (String(cache) == JSON.stringify(movie)) {
+            if (cache) {
                 console.log("<<<<<<<<<<masuk ke redis")
                 return JSON.parse(cache)
             } else {
+                const movies = db.collection("movies")
+                const movie = await movies.find({}).toArray()
                 redis.set('movies',JSON.stringify(movie))
                 // console.log(cache ,"<<<<<<<<pisahhh", JSON.stringify(movie), "<<<<<<<<<<<<<<,vhghvu")
                 console.log("<<<<<<<<<<masuk ke movies")
@@ -44,6 +43,7 @@ class Model {
                 tags: req.body.tags
             })
             console.log(req.body, "<<<<<<<BODYYYY")
+            redis.del('movies')
             return data
         } catch (err) {
             return err
@@ -64,6 +64,7 @@ class Model {
 
             const result = await movies.replaceOne(movie, data)
             // console.log(req.params.id, "<<<<<<<PARAAMSSS")
+            redis.del('movies')
             return result
         }
 
@@ -77,15 +78,9 @@ class Model {
         try {
             const movies = db.collection("movies")
             const movie = { _id: ObjectId(req.params.id) }
-            const data = {
-                title: req.body.title,
-                overview: req.body.overview,
-                poster_path: req.body.poster_path,
-                popularity: req.body.popularity,
-                tags: req.body.tags
-            }
-
-            const result = await movies.deleteOne(movie, data)
+         
+            redis.del('movies')
+            const result = await movies.deleteOne(movie)
             // console.log(req.params.id, "<<<<<<<PARAAMSSS")
         }
 

@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const route = require('./route/movie')
-const PORT = 3001
+const PORT = 5001
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
