@@ -19,12 +19,27 @@ class Model {
             } else {
                 const movies = db.collection("movies")
                 const movie = await movies.find({}).toArray()
-                redis.set('movies',JSON.stringify(movie))
+                redis.set('movies', JSON.stringify(movie))
                 // console.log(cache ,"<<<<<<<<pisahhh", JSON.stringify(movie), "<<<<<<<<<<<<<<,vhghvu")
                 console.log("<<<<<<<<<<masuk ke movies")
                 return movie
             }
-            
+
+
+        } catch (err) {
+            return err
+            // console.log(err, 'masuk di eror!!!!!!!')
+        }
+    }
+
+    static async readId(req, res) {
+        try {
+            const movies = db.collection("movies")
+            const id = { _id: ObjectId(req.params.id) }
+            let movie = movies.findOne(id)
+            // console.log(movie, "<<<<<<<<<<movieee")
+            return movie
+
 
         } catch (err) {
             return err
@@ -78,7 +93,7 @@ class Model {
         try {
             const movies = db.collection("movies")
             const movie = { _id: ObjectId(req.params.id) }
-         
+
             redis.del('movies')
             const result = await movies.deleteOne(movie)
             // console.log(req.params.id, "<<<<<<<PARAAMSSS")

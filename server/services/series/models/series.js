@@ -31,6 +31,20 @@ class Model {
         }
     }
 
+    static async readId(req, res) {
+        try {
+            const series = db.collection("series")
+            const id = { _id: ObjectId(req.params.id) }
+            let ser = series.findOne(id)
+            return ser
+
+
+        } catch (err) {
+            return err
+            // console.log(err, 'masuk di eror!!!!!!!')
+        }
+    }
+
     static async create(req, res) {
         try {
             const series = db.collection("series")

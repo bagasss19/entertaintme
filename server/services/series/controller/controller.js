@@ -11,6 +11,16 @@ class Controller {
         })
     }
 
+    static readId (req,res) {
+        Model.readId(req,res)
+        .then(data => {
+            res.status(200).json(data)
+        })
+        .catch(err => {
+            res.status(400).json({ msg: `${err}` })
+        })
+    }
+
     static create(req,res) {
         Model.create(req,res)
         .then(data => {

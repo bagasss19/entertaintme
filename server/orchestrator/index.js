@@ -1,28 +1,31 @@
 const { ApolloServer, gql } = require('apollo-server')
 const axios = require('axios')
-
+const Redis = require('ioredis')
+const redis = new Redis()
 const typeDefs = gql`
 type Movie {
     _id : ID
-    title: String
-    overview: String
-    poster_path : String
-    popularity : Float
+    title: String!
+    overview: String!
+    poster_path : String!
+    popularity : Float!
     tags : [String]!
   }
 
 type Ser {
-    _id : ID
-    title: String
-    overview: String
-    poster_path : String
-    popularity : Float
+    _id : ID!
+    title: String!
+    overview: String!
+    poster_path : String!
+    popularity : Float!
     tags : [String]!
   }
 
   type Query {
     Movies: [Movie]
+    MovieID(_id : ID) : Movie
     Series : [Ser]
+    SerID(_id : ID) : Ser
   }
 
 type Mutation {
@@ -80,10 +83,36 @@ const resolvers = {
 
         },
 
+        MovieID: function (_, args) {
+            console.log(args, "<<<<<<<<<<args")
+            return axios({
+                method: 'get',
+                url: 'http://localhost:5001/movies/' + args._id
+            })
+                .then(data => {
+                    // console.log(data, "<<<<<<<<<<<dataaaaaaaaa")
+                    return data.data
+                })
+
+        },
+
         Series: function () {
             return axios({
                 method: 'get',
                 url: 'http://localhost:5002/tv'
+            })
+                .then(data => {
+                    // console.log(data, "<<<<<<<<<<<dataaaaaaaaa")
+                    return data.data
+                })
+
+        },
+
+        SerID: function (_, args) {
+            console.log(args, "<<<<<<<<<<args")
+            return axios({
+                method: 'get',
+                url: 'http://localhost:5002/tv/' + args._id
             })
                 .then(data => {
                     // console.log(data, "<<<<<<<<<<<dataaaaaaaaa")
@@ -109,6 +138,7 @@ const resolvers = {
             })
                 .then(data => {
                     console.log(data.data, "<<<<<<<<<<<dataaaaaaaaa")
+                    redis.del('movies')
                     return data.data[0]
                 })
                 .catch(err => {
@@ -131,6 +161,7 @@ const resolvers = {
             })
                 .then(data => {
                     //console.log(data.data, "<<<<<<<<<<<dataaaaaaaaa")
+                    redis.del('series')
                     return data.data[0]
                 })
                 .catch(err => {
@@ -153,6 +184,7 @@ const resolvers = {
             })
                 .then(data => {
                     console.log(data.data, "<<<<<<<<<<<dataaaaaaaaa")
+                    redis.del('movies')
                     return data.data[0]
                 })
                 .catch(err => {
@@ -175,6 +207,7 @@ const resolvers = {
             })
                 .then(data => {
                     //console.log(data.data, "<<<<<<<<<<<dataaaaaaaaa")
+                    redis.del('series')
                     return data.data[0]
                 })
                 .catch(err => {
@@ -189,6 +222,7 @@ const resolvers = {
                 url: 'http://localhost:5001/movies/' + args._id,
             })
                 .then(data => {
+                    redis.del('movies')
                     return data
                 })
                 .catch(err => {
@@ -203,6 +237,7 @@ const resolvers = {
                 url: 'http://localhost:5002/tv/' + args._id,
             })
                 .then(data => {
+                    redis.del('series')
                     return data
                 })
                 .catch(err => {
