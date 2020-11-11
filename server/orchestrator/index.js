@@ -13,7 +13,7 @@ type Movie {
   }
 
 type Ser {
-    _id : ID!
+    _id : ID
     title: String!
     overview: String!
     poster_path : String!
