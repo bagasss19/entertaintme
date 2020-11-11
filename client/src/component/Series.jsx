@@ -30,13 +30,14 @@ mutation deleteSeries($_id : ID) {
     deleteSeries(
         _id : $_id)  
         {
-            _id
+        _id
         }
     }`
 
 function Series(props) {
   const [del] = useMutation(DELETE)
-  const { loading, error, data, refetch, networkStatus } = useQuery(GETDATA, { notifyOnNetworkStatusChange: true})
+  const { loading, error, data, refetch, networkStatus } = useQuery(GETDATA, 
+    { notifyOnNetworkStatusChange: true, refetchQueries: [GETDATA], fetchPolicy : "no-cache"})
 
   if (networkStatus === NetworkStatus.refetch) return <p>Refresh Data ...</p>
   if (loading) return <p>Loading ...</p>
@@ -55,13 +56,17 @@ function Series(props) {
       <img src="https://www.flaticon.com/svg/static/icons/svg/3074/3074767.svg" alt="movie logo" style={{ width: 100 }} />
       {/* <p>{JSON.stringify(data.Movies)}</p> */}
       <div>
-      <Link to="/addseries"><Button variant="btn btn-primary btn-space">Add Series</Button></Link><br></br><br></br>
+      <Link to="/addseries"><Button variant="btn btn-primary btn-space">Add Series</Button></Link>
+      <Button variant="btn btn-primary btn-space" onClick={(e) => {
+        e.preventDefault()
+        refetch()
+      }}>Refresh Data</Button><br></br><br></br><br></br>
       <div className="container">
         <div className="row">
           {data.Series.map((x, i) =>
             <div className="col-md-3 col-sm-6" key={i}>
-              <Card  style={{ height: '300px' }}>
-              <center><Card.Img variant="top" src={"https://www.flaticon.com/svg/static/icons/svg/3074/3074767.svg"} style={{ width: 100 }} /></center>
+              <Card style={{ height: '400px', width: '275px' }}>
+              <center><Card.Img variant="top" src={x.poster_path} style={{ width: 275, height : 200}} /></center>
 
                 <Card.Body>
                   <Card.Title>{x.title}</Card.Title>

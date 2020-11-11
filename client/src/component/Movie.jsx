@@ -40,7 +40,7 @@ mutation deleteMovie($_id : ID) {
 function Movie(props) {
   const [del] = useMutation(DELETE)
   const { loading, error, data, refetch, networkStatus } = useQuery(GETDATA, 
-    { notifyOnNetworkStatusChange: true, refetchQueries: [GETDATA]})
+    { notifyOnNetworkStatusChange: true, refetchQueries: [GETDATA], fetchPolicy : "no-cache"})
 
   if (networkStatus === NetworkStatus.refetch) return <p>Refresh Data ...</p>
   if (loading) return <p>Loading ...</p>

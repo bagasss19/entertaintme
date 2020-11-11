@@ -75,7 +75,7 @@ const EditMovie = (props) => {
                     }
                 };
                 editData(vars)
-                props.history.push('/')
+                props.history.push('/getmovie')
                 const input = {
                     title, overview, poster_path, popularity, tags
                 }

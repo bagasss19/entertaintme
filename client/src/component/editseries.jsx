@@ -71,7 +71,7 @@ const EditSeries = (props) => {
                     }
                 };
                 edit(vars)
-                props.history.push('/')
+                props.history.push('/getseries')
                 const input = {
                     title, overview, poster_path, popularity, tags
                 }
